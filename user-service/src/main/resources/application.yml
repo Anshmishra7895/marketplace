@@ -1,0 +1,7 @@
+server:
+  port: 8081
+
+app:
+  jwt:
+    secret: hIltiHm2ugcSpIKmNS+pjV8bQotTpVEWMqEtJp3Y5ZI=hIltiHm2ugcSpIKmNS+pjV8bQotTpVEWMqEtJp3Y5ZI
+    expiration-ms: 86400000

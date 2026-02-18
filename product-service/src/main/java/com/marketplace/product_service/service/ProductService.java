@@ -3,6 +3,9 @@ package com.marketplace.product_service.service;
 import com.marketplace.product_service.dto.ProductDto;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public interface ProductService {
@@ -22,4 +25,7 @@ public interface ProductService {
     Page<ProductDto> filterProducts(Long categoryId, Double minPrice, Double maxPrice, int pageNumber, int pageSize);
 
     Page<ProductDto> advanceFilter(String keyword, Long categoryId, Double minPrice, Double maxPrice, int pageNumber, int pageSize, String sortBy, String sortDir);
+
+    ProductDto uploadImage(Long productId, MultipartFile file) throws IOException;
+
 }

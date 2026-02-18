@@ -5,7 +5,7 @@ import com.marketplace.user_service.dto.LoginResponseDto;
 import com.marketplace.user_service.dto.UserCreateRequestDto;
 import com.marketplace.user_service.dto.UserResponseDto;
 import com.marketplace.user_service.entity.User;
-import com.marketplace.user_service.exception.DuplicateResourceException;
+import com.marketplace.user_service.exception.ResourceAlreadyExistException;
 import com.marketplace.user_service.repository.UserRepo;
 import com.marketplace.user_service.service.UserService;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto register(UserCreateRequestDto userCreateRequestDto) {
         if(userRepo.existByEmail(userCreateRequestDto.getEmail())){
-            throw new DuplicateResourceException(()-> "Email already exist");
+            throw new ResourceAlreadyExistException("Email already exist");
         }
         User user = new User();
         user.setName(userCreateRequestDto.getName());

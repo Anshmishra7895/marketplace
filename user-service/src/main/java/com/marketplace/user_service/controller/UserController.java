@@ -8,6 +8,7 @@ import com.marketplace.user_service.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getById(@PathVariable Long id){
+    public ResponseEntity<UserResponseDto> getById(@PathVariable Long id, Authentication authentication){
         UserResponseDto userResponseDto = userService.getById(id);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }

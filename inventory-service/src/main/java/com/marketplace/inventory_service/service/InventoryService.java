@@ -15,7 +15,7 @@ public interface InventoryService {
 
     InventoryResponseDto getInventoryById(Long id);
 
-    InventoryResponseDto getInventoryBySkuCode(String skuCode);
+    InventoryResponseDto checkInventory(String skuCode);
 
     void deleteInventory(Long id);
 

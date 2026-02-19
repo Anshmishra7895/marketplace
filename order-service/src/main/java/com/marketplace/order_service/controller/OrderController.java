@@ -35,7 +35,7 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<ApiResponse> getOrderByOrderId(@PathVariable String orderId){
         OrderResponseDto order = orderService.findByOrderId(orderId);
-        return ResponseEntity.ok(new ApiResponse(true, "Order fetch successfully with order id: "+orderId, order))
+        return ResponseEntity.ok(new ApiResponse(true, "Order fetch successfully with order id: "+orderId, order));
     }
 
     @GetMapping("/{skuCode}")

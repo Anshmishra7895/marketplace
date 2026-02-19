@@ -37,8 +37,8 @@ public class InventoryController {
     }
 
     @GetMapping("/{skuCode}")
-    public ResponseEntity<ApiResponse> getInventoryBySkuCode(@PathVariable String skuCode){
-        InventoryResponseDto inventoryBySkuCode = inventoryService.getInventoryBySkuCode(skuCode);
+    public ResponseEntity<ApiResponse> checkInventory(@PathVariable String skuCode){
+        InventoryResponseDto inventoryBySkuCode = inventoryService.checkInventory(skuCode);
         return new ResponseEntity<>(new ApiResponse(true, "Inventory found with sku code: "+skuCode, inventoryBySkuCode), HttpStatus.OK);
     }
 

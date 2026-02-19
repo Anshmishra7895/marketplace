@@ -1,9 +1,12 @@
 package com.marketplace.order_service.service.impl;
 
+import com.marketplace.order_service.client.InventoryFeignClient;
 import com.marketplace.order_service.dto.OrderRequestDto;
 import com.marketplace.order_service.dto.OrderResponseDto;
+import com.marketplace.order_service.dto.feign.InventoryResponseDto;
 import com.marketplace.order_service.entity.Order;
 import com.marketplace.order_service.exception.OrderNotFoundException;
+import com.marketplace.order_service.exception.OutOfStockException;
 import com.marketplace.order_service.mapper.OrderMapper;
 import com.marketplace.order_service.repository.OrderRepo;
 import com.marketplace.order_service.service.OrderService;
@@ -18,14 +21,20 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepo orderRepo;
     private final OrderMapper orderMapper;
+    private final InventoryFeignClient inventoryFeignClient;
 
-    public OrderServiceImpl(OrderRepo orderRepo, OrderMapper orderMapper){
+    public OrderServiceImpl(OrderRepo orderRepo, OrderMapper orderMapper, InventoryFeignClient inventoryFeignClient){
         this.orderRepo = orderRepo;
         this.orderMapper = orderMapper;
+        this.inventoryFeignClient = inventoryFeignClient;
     }
 
     @Override
     public OrderResponseDto placeOrder(OrderRequestDto orderRequestDto) {
+        InventoryResponseDto inventory = inventoryFeignClient.isInStock(orderRequestDto.getSkuCode());
+        if(!inventory.getInStock()){
+            throw new OutOfStockException("Product with sku code: "+ orderRequestDto.getSkuCode() +" is out of stock");
+        }
         Order order = orderMapper.toEntity(orderRequestDto);
         order.setOrderStatus(Status.NEW);
         order.setOrderNumber(UUID.randomUUID().toString());

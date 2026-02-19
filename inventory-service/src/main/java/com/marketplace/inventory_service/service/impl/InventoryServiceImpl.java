@@ -43,7 +43,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public InventoryResponseDto getInventoryBySkuCode(String skuCode) {
+    public InventoryResponseDto checkInventory(String skuCode) {
         Inventory inventory = inventoryRepo.findBySkuCode(skuCode).orElseThrow(() -> new ResourceNotFound("Inventory not found sku code: " + skuCode));
         return inventoryMapper.toDto(inventory);
     }

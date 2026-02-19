@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/products")
@@ -81,6 +84,12 @@ public class ProductController {
                                                           @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir){
         Page<ProductDto> productDtos = productService.advanceFilter(keyword, categoryId, minPrice, maxPrice, pageNumber, pageSize, sortBy, sortDir);
         return new ResponseEntity<>(productDtos, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/upload-image")
+    public ResponseEntity<ApiResponse> uploadImage(@PathVariable Long id, @RequestBody MultipartFile file) throws IOException {
+        ProductDto productDto = productService.uploadImage(id, file);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Image uploaded successfully", null), HttpStatus.OK);
     }
 
 

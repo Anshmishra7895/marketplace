@@ -5,14 +5,17 @@ import com.marketplace.order_service.dto.OrderRequestDto;
 import com.marketplace.order_service.dto.OrderResponseDto;
 import com.marketplace.order_service.dto.feign.InventoryResponseDto;
 import com.marketplace.order_service.entity.Order;
+import com.marketplace.order_service.event.OrderPlacedEvent;
 import com.marketplace.order_service.exception.OrderNotFoundException;
 import com.marketplace.order_service.exception.OutOfStockException;
+import com.marketplace.order_service.kafka.OrderEventProducer;
 import com.marketplace.order_service.mapper.OrderMapper;
 import com.marketplace.order_service.repository.OrderRepo;
 import com.marketplace.order_service.service.OrderService;
 import com.marketplace.order_service.util.Status;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,11 +25,13 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepo orderRepo;
     private final OrderMapper orderMapper;
     private final InventoryFeignClient inventoryFeignClient;
+    private final OrderEventProducer orderEventProducer;
 
-    public OrderServiceImpl(OrderRepo orderRepo, OrderMapper orderMapper, InventoryFeignClient inventoryFeignClient){
+    public OrderServiceImpl(OrderRepo orderRepo, OrderMapper orderMapper, InventoryFeignClient inventoryFeignClient, OrderEventProducer orderEventProducer){
         this.orderRepo = orderRepo;
         this.orderMapper = orderMapper;
         this.inventoryFeignClient = inventoryFeignClient;
+        this.orderEventProducer = orderEventProducer;
     }
 
     @Override
@@ -37,8 +42,16 @@ public class OrderServiceImpl implements OrderService {
         }
         Order order = orderMapper.toEntity(orderRequestDto);
         order.setOrderStatus(Status.NEW);
-        order.setOrderNumber(UUID.randomUUID().toString());
+        String orderId = UUID.randomUUID().toString();
+        order.setOrderNumber(orderId);
         Order savedOrder = orderRepo.save(order);
+        OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
+        orderPlacedEvent.setEventId(UUID.randomUUID().toString());
+        orderPlacedEvent.setOrderId(orderId);
+        orderPlacedEvent.setSkuCode(orderRequestDto.getSkuCode());
+        orderPlacedEvent.setQuantity(orderRequestDto.getQuantity());
+        orderPlacedEvent.setEventTime(LocalDateTime.now());
+        orderEventProducer.sendOrderEvent(orderPlacedEvent);
         return orderMapper.toDto(savedOrder);
     }
 

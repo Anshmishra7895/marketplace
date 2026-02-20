@@ -3,6 +3,8 @@ package com.marketplace.inventory_service.service.impl;
 import com.marketplace.inventory_service.dto.InventoryRequestDto;
 import com.marketplace.inventory_service.dto.InventoryResponseDto;
 import com.marketplace.inventory_service.entity.Inventory;
+import com.marketplace.inventory_service.event.OrderPlacedEvent;
+import com.marketplace.inventory_service.exception.OutOfStockException;
 import com.marketplace.inventory_service.exception.ResourceNotFound;
 import com.marketplace.inventory_service.mapper.InventoryMapper;
 import com.marketplace.inventory_service.repository.InventoryRepo;
@@ -51,5 +53,17 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public void deleteInventory(Long id) {
         inventoryRepo.deleteById(id);
+    }
+
+    @Override
+    public void updateInventory(OrderPlacedEvent orderPlacedEvent) {
+        Inventory inventory = inventoryRepo.findBySkuCode(orderPlacedEvent.getSkuCode()).orElseThrow(() -> new ResourceNotFound("Inventory not found"));
+        Integer orderedQuantity = orderPlacedEvent.getQuantity();
+        Integer availableQuantity = inventory.getQuantity();
+        if(orderedQuantity > availableQuantity){
+            throw new OutOfStockException("Insufficient stock for this sku code: "+orderPlacedEvent.getSkuCode());
+        }
+        inventory.setQuantity(availableQuantity - orderedQuantity);
+        inventoryRepo.save(inventory);
     }
 }

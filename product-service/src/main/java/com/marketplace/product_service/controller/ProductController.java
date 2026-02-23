@@ -1,5 +1,6 @@
 package com.marketplace.product_service.controller;
 
+import com.marketplace.product_service.dto.CursorPageResponseDto;
 import com.marketplace.product_service.dto.ProductDto;
 import com.marketplace.product_service.service.ProductService;
 import com.marketplace.product_service.util.ApiResponse;
@@ -53,6 +54,14 @@ public class ProductController {
             @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir){
         Page<ProductDto> allProducts = productService.getAllProducts(pageNumber, pageSize, sortBy, sortDir);
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
+    }
+
+    @GetMapping("/cursor")
+    public ResponseEntity<CursorPageResponseDto> getAllProductsWithCursor(
+            @RequestParam(value = "cursor") Long cursor,
+            @RequestParam(value = "size") int size){
+        CursorPageResponseDto cursorPageResponseDto = productService.getAllProductsWithCursor(cursor, size);
+        return ResponseEntity.ok(cursorPageResponseDto);
     }
 
     @GetMapping("/search")

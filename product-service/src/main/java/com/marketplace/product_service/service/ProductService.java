@@ -1,11 +1,14 @@
 package com.marketplace.product_service.service;
 
+import com.marketplace.product_service.dto.CursorPageResponseDto;
 import com.marketplace.product_service.dto.ProductDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public interface ProductService {
@@ -19,6 +22,8 @@ public interface ProductService {
     ProductDto getProductById(Long id);
 
     Page<ProductDto> getAllProducts(int pageNumber, int pageSize, String sortBy, String sortDir);
+
+    CursorPageResponseDto getAllProductsWithCursor(Long cursor, int size);
 
     Page<ProductDto> searchProducts(String keyword, int pageNumber, int pageSize);
 

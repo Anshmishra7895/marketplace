@@ -13,6 +13,12 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
 
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 
+    /* SELECT * FROM Product where id > 5 ORDER BY id ASC LIMIT 5 */
+    @Query("SELECT p FROM Product p "+
+            "WHERE (:cursor IS NULL OR p.id > :cursor) "+
+            "ORDER BY p.id ASC")
+    List<Product> fetchNextPage(@Param(value = "cursor") Long cursor, Pageable pageable);
+
     Page<Product> findByPriceBetween(Double min, Double max, Pageable pageable);
 
     Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageable);

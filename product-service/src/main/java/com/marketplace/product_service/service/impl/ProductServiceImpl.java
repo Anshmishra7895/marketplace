@@ -1,5 +1,6 @@
 package com.marketplace.product_service.service.impl;
 
+import com.marketplace.product_service.dto.CursorPageResponseDto;
 import com.marketplace.product_service.dto.ProductDto;
 import com.marketplace.product_service.entity.Category;
 import com.marketplace.product_service.entity.Product;
@@ -87,6 +88,22 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage = productRepo.findAll(pageable);
 //        return (Page<ProductDto>) productPage.stream().map(page -> productMapper.toDto(page)).toList();
         return productPage.map(productMapper::toDto);
+    }
+
+    @Override
+    public CursorPageResponseDto getAllProductsWithCursor(Long cursor, int size) {
+
+        //Default page
+        Pageable pageable = PageRequest.of(0, size);
+
+        List<Product> products = productRepo.fetchNextPage(cursor, pageable);
+
+        // check if there are more records
+        boolean hasNext = products.size() == size;
+
+        Long nextCursor = hasNext == true ? products.get(products.size()-1).getId() : null;
+
+        return new CursorPageResponseDto<>(products, size, nextCursor, hasNext);
     }
 
     @Override

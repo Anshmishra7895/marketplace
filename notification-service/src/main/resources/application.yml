@@ -22,3 +22,8 @@ spring:
           auth: true
           starttls:
             enable: true
+
+twilio:
+  account-sid: don't_look_for_my_sid
+  auth-token: make_your_own_auth-token
+  from-number: and_yeah_number_too

@@ -5,6 +5,9 @@ import com.marketplace.product_service.entity.Category;
 import com.marketplace.product_service.mapper.CategoryMapper;
 import com.marketplace.product_service.repository.CategoryRepo;
 import com.marketplace.product_service.service.CategoryService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.toDto(category);
     }
 
+    @CachePut(value = "category", key = "#categoryId")
     @Override
     public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
         Category category = categoryRepo.findById(id).orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
@@ -35,11 +39,13 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.toDto(categoryRepo.save(category));
     }
 
+    @CacheEvict(value = "category", key = "#categoryId")
     @Override
     public void deleteCategory(Long id) {
         categoryRepo.findById(id).orElseThrow(()-> new RuntimeException("Category not found with id: "+id));
     }
 
+    @Cacheable(value = "category", key = "#categoryId")
     @Override
     public CategoryDto getCategory(Long id) {
         Category category = categoryRepo.findById(id).orElseThrow(() -> new RuntimeException("Category not found with id: " + id));

@@ -7,6 +7,9 @@ import com.marketplace.product_service.mapper.ProductMapper;
 import com.marketplace.product_service.repository.ProductRepo;
 import com.marketplace.product_service.service.ProductService;
 import com.marketplace.product_service.util.AppConstants;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +49,7 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toDto(savedProduct);
     }
 
+    @CachePut(value = "product", key = "#productId")
     @Override
     public ProductDto updateProduct(Long id, ProductDto dto) {
         Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Product Not Found"));
@@ -62,11 +66,13 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toDto(savedProduct);
     }
 
+    @CacheEvict(value = "product", key = "#productId")
     @Override
     public void deleteProduct(Long id) {
         productRepo.deleteById(id);
     }
 
+    @Cacheable(value = "product", key = "#productId")
     @Override
     public ProductDto getProductById(Long id) {
         Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Product not Found"));

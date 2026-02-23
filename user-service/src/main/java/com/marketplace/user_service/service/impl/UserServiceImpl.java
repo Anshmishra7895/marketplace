@@ -12,6 +12,7 @@ import com.marketplace.user_service.mapper.UserMapper;
 import com.marketplace.user_service.repository.UserRepo;
 import com.marketplace.user_service.service.UserService;
 import com.marketplace.user_service.util.JwtUtil;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
         return authMapper.toLoginResponseDto(user, token);
     }
 
+    @Cacheable(value = "user", key = "#id")
     @Override
     public UserResponseDto getById(Long id) {
         User user = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));

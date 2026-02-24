@@ -93,7 +93,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public CursorPageResponseDto getAllProductsWithCursor(Long cursor, int size) {
 
-        //Default page
+        //Default page when cursor is NULL or 0
         Pageable pageable = PageRequest.of(0, size);
 
         List<Product> products = productRepo.fetchNextPage(cursor, pageable);

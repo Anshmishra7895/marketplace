@@ -92,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public CursorPageResponseDto getAllProductsWithCursor(Long cursor, int size) {
 
-        //Default page when cursor is NULL
+        //Default page
         Pageable pageable = PageRequest.of(0, size);
 
         List<Product> products = productRepo.fetchNextPage(cursor, pageable);
@@ -103,26 +103,6 @@ public class ProductServiceImpl implements ProductService {
         Long nextCursor = hasNext == true ? products.get(products.size()-1).getId() : null;
 
         return new CursorPageResponseDto<>(products, size, nextCursor, hasNext);
-    }
-
-    /* We get cursor and size from user, now convert cursor into ScrollPosition Object and use size to create
-    * Pageable object */
-    @Override
-    public CursorPageResponseDto getAllProductsWithWindow(Long cursor, int size) {
-        Pageable pageable = Pageable.ofSize(size);
-
-        ScrollPosition scrollPosition = (cursor == null)
-                ? ScrollPosition.keyset()
-                : ScrollPosition.forward(Collections.singletonMap("id", cursor));
-
-        Window<Product> productWindow = productRepo.fetchNextPageWithWindow(scrollPosition, pageable);
-        List<Product> products = productWindow.getContent();
-
-        Long nextCursor = null;
-        if(!products.isEmpty() && productWindow.hasNext()){
-            nextCursor = products.get(products.size() - 1).getId();
-        }
-        return new CursorPageResponseDto<>(products, size, cursor, productWindow.hasNext());
     }
 
     @Override

@@ -107,7 +107,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public CursorPageResponseDto getAllProductsWithWindow(Long cursor, int size) {
-        return new CursorPageResponseDto<>();
+
+        Pageable pageable = Pageable.ofSize(size);
+
+        ScrollPosition scrollPosition = (cursor == null)
+                ? ScrollPosition.keyset()
+                : ScrollPosition.forward(Collections.singletonMap("id", cursor));
+
+        Window<Product> productWindow = productRepo.fetchNextPageWithWindow(scrollPosition, pageable);
+
+        List<Product> products = productWindow.getContent();
+
+        Long nextCursor = null;
+        if(productWindow.hasNext() && !products.isEmpty()){
+            nextCursor = products.get(products.size()-1).getId();
+        }
+
+        return new CursorPageResponseDto<>(products, size, nextCursor, productWindow.hasNext());
     }
 
     @Override

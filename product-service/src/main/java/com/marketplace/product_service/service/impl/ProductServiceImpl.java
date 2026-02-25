@@ -105,6 +105,10 @@ public class ProductServiceImpl implements ProductService {
         return new CursorPageResponseDto<>(products, size, nextCursor, hasNext);
     }
 
+    @Override
+    public CursorPageResponseDto getAllProductsWithWindow(Long cursor, int size) {
+        return new CursorPageResponseDto<>();
+    }
 
     @Override
     public Page<ProductDto> searchProducts(String keyword, int pageNumber, int pageSize) {

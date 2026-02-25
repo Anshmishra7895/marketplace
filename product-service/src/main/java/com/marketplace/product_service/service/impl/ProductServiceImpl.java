@@ -106,6 +106,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public CursorPageResponseDto getAllProductsWithWindow(Long cursor, int size) {
+        return new CursorPageResponseDto<>();
+    }
+
+    @Override
     public Page<ProductDto> searchProducts(String keyword, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Product> productPage = productRepo.searchProducts(keyword, pageable);

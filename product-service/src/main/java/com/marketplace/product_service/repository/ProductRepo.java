@@ -3,6 +3,8 @@ package com.marketplace.product_service.repository;
 import com.marketplace.product_service.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +22,8 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
             "WHERE (:cursor IS NULL OR p.id > :cursor) "+
             "ORDER BY p.id ASC")
     List<Product> fetchNextPage(@Param(value = "cursor") Long cursor, Pageable pageable);
+
+    Window<Product> fetchNextPageWithWindow(ScrollPosition position, Pageable pageable);
 
     Page<Product> findByPriceBetween(Double min, Double max, Pageable pageable);
 

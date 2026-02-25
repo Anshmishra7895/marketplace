@@ -11,10 +11,8 @@ import com.marketplace.product_service.util.AppConstants;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.security.authentication.CachingUserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public CursorPageResponseDto getAllProductsWithCursor(Long cursor, int size) {
 
-        //Default page
+        //Default page when cursor is NULL
         Pageable pageable = PageRequest.of(0, size);
 
         List<Product> products = productRepo.fetchNextPage(cursor, pageable);
@@ -104,6 +103,26 @@ public class ProductServiceImpl implements ProductService {
         Long nextCursor = hasNext == true ? products.get(products.size()-1).getId() : null;
 
         return new CursorPageResponseDto<>(products, size, nextCursor, hasNext);
+    }
+
+    /* We get cursor and size from user, now convert cursor into ScrollPosition Object and use size to create
+    * Pageable object */
+    @Override
+    public CursorPageResponseDto getAllProductsWithWindow(Long cursor, int size) {
+        Pageable pageable = Pageable.ofSize(size);
+
+        ScrollPosition scrollPosition = (cursor == null)
+                ? ScrollPosition.keyset()
+                : ScrollPosition.forward(Collections.singletonMap("id", cursor));
+
+        Window<Product> productWindow = productRepo.fetchNextPageWithWindow(scrollPosition, pageable);
+        List<Product> products = productWindow.getContent();
+
+        Long nextCursor = null;
+        if(!products.isEmpty() && productWindow.hasNext()){
+            nextCursor = products.get(products.size() - 1).getId();
+        }
+        return new CursorPageResponseDto<>(products, size, cursor, productWindow.hasNext());
     }
 
     @Override

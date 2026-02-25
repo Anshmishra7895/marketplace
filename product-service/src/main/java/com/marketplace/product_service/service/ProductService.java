@@ -4,6 +4,8 @@ import com.marketplace.product_service.dto.CursorPageResponseDto;
 import com.marketplace.product_service.dto.ProductDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.security.authentication.CachingUserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +26,8 @@ public interface ProductService {
     Page<ProductDto> getAllProducts(int pageNumber, int pageSize, String sortBy, String sortDir);
 
     CursorPageResponseDto getAllProductsWithCursor(Long cursor, int size);
+
+    CursorPageResponseDto getAllProductsWithWindow(Long cursor, int size);
 
     Page<ProductDto> searchProducts(String keyword, int pageNumber, int pageSize);
 

@@ -33,7 +33,7 @@ public class LoggingAspect {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
         log.error("----- Method {} failed! -----", methodName);
-        log.error("----- Exception Type: {} -----", exception.getClass().getName()); // Error ka type (NullPointerException etc.)
+        log.error("----- Exception Type: {} -----", exception.getClass().getName());
         log.error("----- Error Message: {} -----", exception.getMessage());
     }
 
